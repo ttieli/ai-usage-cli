@@ -38,15 +38,15 @@ def _format_usage(used_pct: float) -> Text:
     t = Text()
 
     if used_pct >= 100:
-        t.append("已耗尽", style="bold red")
+        t.append("EXHAUSTED", style="bold red")
     elif used_pct >= 80:
-        t.append(f"剩余 {remaining:4.1f}%", style="bold red")
+        t.append(f"{remaining:5.1f}% left", style="bold red")
     elif used_pct >= 50:
-        t.append(f"剩余 {remaining:4.1f}%", style="yellow")
+        t.append(f"{remaining:5.1f}% left", style="yellow")
     elif used_pct > 0:
-        t.append(f"剩余 {remaining:4.1f}%", style="green")
+        t.append(f"{remaining:5.1f}% left", style="green")
     else:
-        t.append("未使用", style="green")
+        t.append("unused", style="green")
 
     return t
 
@@ -82,11 +82,11 @@ def render_text(results: list[UsageResult], console: Console) -> None:
             line.append("  ")
             line.append_text(_bar(w.used_percent))
             if w.resets_at:
-                line.append(f"  {w.resets_at} 后重置", style="dim")
+                line.append(f"  resets in {w.resets_at}", style="dim")
             console.print(line)
 
         if r.cost:
-            cost_line = Text("    费用: ", style="dim")
+            cost_line = Text("    cost: ", style="dim")
             cost_line.append(f"${r.cost.used:.2f}", style="yellow")
             if r.cost.limit:
                 cost_line.append(f" / ${r.cost.limit:.2f}", style="dim")

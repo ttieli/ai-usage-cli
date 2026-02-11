@@ -9,15 +9,16 @@ Check your AI coding tool usage quotas from the terminal. Supports **Claude Code
 ```
 $ ai-usage
 
-  Claude  (keychain)  [Max]  user@example.com
-    Daily (5h window)   剩余 72.0%  [█████░░░░░░░░░░░░░░░]  4h 12m 后重置
+  Claude  (oauth)  [Max]  user@example.com
+    Session (5h)         72.0% left  [█████░░░░░░░░░░░░░░░]  resets in 4h12m
+    Weekly (7d)          85.0% left  [███░░░░░░░░░░░░░░░░░]  resets in 132h
 
   Codex  (oauth)  [Plus]
-    Daily              剩余 95.2%  [█░░░░░░░░░░░░░░░░░░░]
+    Daily                95.2% left  [█░░░░░░░░░░░░░░░░░░░]
 
   Gemini  (oauth)  [Free]
-    Per-minute         剩余 100.0% [░░░░░░░░░░░░░░░░░░░░]
-    Daily              剩余 88.4%  [██░░░░░░░░░░░░░░░░░░]  16h 后重置
+    Per-minute          100.0% left  [░░░░░░░░░░░░░░░░░░░░]
+    Daily                88.4% left  [██░░░░░░░░░░░░░░░░░░]  resets in 16h
 ```
 
 ## Installation
