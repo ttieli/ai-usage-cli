@@ -107,6 +107,10 @@ ai-usage --json                # JSON 输出（适合脚本处理）
 ai-usage --plain               # 纯文本输出（无颜色、无 Unicode）
 ```
 
+## Related Projects
+
+- [CodexBar](https://github.com/steipete/CodexBar) — macOS menu bar app for AI coding tool usage tracking. `ai-usage-cli` shares the same `~/.codexbar/config.json` configuration and was built as a cross-platform CLI companion.
+
 ## License
 
 [MIT](LICENSE)
