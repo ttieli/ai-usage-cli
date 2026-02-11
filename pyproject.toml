@@ -34,9 +34,9 @@ dependencies = [
 ai-usage = "ai_usage.main:main"
 
 [project.urls]
-Homepage = "https://github.com/tieli/ai-usage-cli"
-Repository = "https://github.com/tieli/ai-usage-cli"
-Issues = "https://github.com/tieli/ai-usage-cli/issues"
+Homepage = "https://github.com/ttieli/ai-usage-cli"
+Repository = "https://github.com/ttieli/ai-usage-cli"
+Issues = "https://github.com/ttieli/ai-usage-cli/issues"
 
 [build-system]
 requires = ["hatchling"]
