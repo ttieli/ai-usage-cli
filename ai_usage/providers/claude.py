@@ -6,7 +6,7 @@ from pathlib import Path
 
 import httpx
 
-from .base import BaseProvider, CostInfo, RateWindow, UsageResult, read_keychain
+from .base import BaseProvider, CostInfo, RateWindow, UsageResult, format_duration, read_keychain
 
 
 class ClaudeProvider(BaseProvider):
@@ -110,12 +110,7 @@ class ClaudeProvider(BaseProvider):
                 try:
                     dt = datetime.fromisoformat(window["resets_at"].replace("Z", "+00:00"))
                     delta = dt - datetime.now(timezone.utc)
-                    hours = int(delta.total_seconds() // 3600)
-                    minutes = int((delta.total_seconds() % 3600) // 60)
-                    if delta.total_seconds() > 0:
-                        resets_at = f"{hours}h{minutes}m"
-                    else:
-                        resets_at = "now"
+                    resets_at = format_duration(delta.total_seconds())
                 except (ValueError, TypeError):
                     pass
             result.windows.append(RateWindow(

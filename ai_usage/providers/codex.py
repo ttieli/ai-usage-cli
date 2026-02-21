@@ -8,7 +8,7 @@ from pathlib import Path
 
 import httpx
 
-from .base import BaseProvider, RateWindow, UsageResult
+from .base import BaseProvider, RateWindow, UsageResult, format_duration
 
 
 class CodexProvider(BaseProvider):
@@ -159,6 +159,4 @@ class CodexProvider(BaseProvider):
     def _format_reset_seconds(self, seconds: int | None) -> str:
         if not seconds or seconds <= 0:
             return ""
-        hours = seconds // 3600
-        minutes = (seconds % 3600) // 60
-        return f"{hours}h{minutes}m"
+        return format_duration(seconds)
