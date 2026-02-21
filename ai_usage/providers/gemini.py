@@ -9,7 +9,7 @@ from pathlib import Path
 
 import httpx
 
-from .base import BaseProvider, RateWindow, UsageResult
+from .base import BaseProvider, RateWindow, UsageResult, format_duration
 
 
 class GeminiProvider(BaseProvider):
@@ -197,10 +197,8 @@ class GeminiProvider(BaseProvider):
                 try:
                     dt = datetime.fromisoformat(reset_time.replace("Z", "+00:00"))
                     delta = dt - datetime.now(timezone.utc)
-                    hours = int(delta.total_seconds() // 3600)
-                    minutes = int((delta.total_seconds() % 3600) // 60)
                     if delta.total_seconds() > 0:
-                        reset_str = f"{hours}h{minutes}m"
+                        reset_str = format_duration(delta.total_seconds())
                 except (ValueError, TypeError):
                     pass
 

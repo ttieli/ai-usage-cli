@@ -53,6 +53,18 @@ class BaseProvider:
         raise NotImplementedError
 
 
+def format_duration(total_seconds: float) -> str:
+    """Format seconds into human-readable duration: Xd Xh Xm."""
+    if total_seconds <= 0:
+        return "now"
+    days = int(total_seconds // 86400)
+    hours = int((total_seconds % 86400) // 3600)
+    minutes = int((total_seconds % 3600) // 60)
+    if days > 0:
+        return f"{days}d{hours}h{minutes}m"
+    return f"{hours}h{minutes}m"
+
+
 def load_codexbar_config() -> dict:
     path = Path.home() / ".codexbar" / "config.json"
     if path.exists():
