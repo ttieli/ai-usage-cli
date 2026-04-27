@@ -12,4 +12,5 @@ build/
 
 # Local-only: project tracking/notes, not part of the published package
 docs/
+.claude/
 
