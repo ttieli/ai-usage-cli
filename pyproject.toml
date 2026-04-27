@@ -1,6 +1,6 @@
 [project]
 name = "ai-usage-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "CLI tool to check AI coding tool usage quotas (Claude, Codex, Gemini, Copilot, z.ai)"
 readme = "README.md"
 license = "MIT"

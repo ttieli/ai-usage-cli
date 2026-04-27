@@ -42,8 +42,8 @@ class ClaudeProvider(BaseProvider):
             return result
 
         result.source = "oauth"
-        self._parse_usage(data, result)
         self._parse_identity(result)
+        self._parse_usage(data, result)
         return result
 
     def _get_token(self) -> str | None:
@@ -74,8 +74,7 @@ class ClaudeProvider(BaseProvider):
             creds = json.loads(raw)
             oauth = creds.get("claudeAiOauth", {})
             result.email = oauth.get("email", "")
-            tier = oauth.get("rateLimitTier", "")
-            tier_lower = tier.lower()
+            tier_lower = (oauth.get("rateLimitTier") or "").lower()
             if "max" in tier_lower:
                 result.plan = "Max"
             elif "pro" in tier_lower:
@@ -86,8 +85,6 @@ class ClaudeProvider(BaseProvider):
                 result.plan = "Enterprise"
             elif "free" in tier_lower:
                 result.plan = "Free"
-            elif tier:
-                result.plan = tier
             else:
                 result.plan = ""
         except (json.JSONDecodeError, KeyError):
@@ -99,11 +96,14 @@ class ClaudeProvider(BaseProvider):
             ("seven_day", "Weekly (7d)"),
             ("seven_day_sonnet", "Sonnet (7d)"),
             ("seven_day_opus", "Opus (7d)"),
+            ("seven_day_oauth_apps", "OAuth apps (7d)"),
         ]:
             window = data.get(key)
             if not window:
                 continue
-            utilization = window.get("utilization", 0)
+            utilization = window.get("utilization")
+            if utilization is None:
+                continue
             used_pct = round(utilization, 1)  # API returns 0-100 directly
             resets_at = ""
             if window.get("resets_at"):
@@ -119,11 +119,32 @@ class ClaudeProvider(BaseProvider):
                 resets_at=resets_at,
             ))
 
-        extra = data.get("extra_usage")
-        if extra:
-            result.cost = CostInfo(
-                used=extra.get("used_spend", 0),
-                limit=extra.get("monthly_credit_limit"),
-                currency=extra.get("currency", "USD"),
-                period="monthly",
-            )
+        result.cost = self._parse_extra_usage(data.get("extra_usage"), result.plan)
+
+    @staticmethod
+    def _parse_extra_usage(extra: dict | None, plan: str) -> CostInfo | None:
+        # Claude OAuth's extra_usage block: only meaningful when explicitly enabled
+        # and both used_credits + monthly_limit are populated. The API reports
+        # amounts in cents, so convert to dollars; non-enterprise plans sometimes
+        # report another 100x inflation, rescale when the result still looks too high.
+        if not extra or extra.get("is_enabled") is not True:
+            return None
+        used = extra.get("used_credits")
+        limit = extra.get("monthly_limit")
+        if used is None or limit is None:
+            return None
+
+        used_dollars = used / 100.0
+        limit_dollars = limit / 100.0
+
+        if "enterprise" not in plan.lower() and limit_dollars >= 1000:
+            used_dollars /= 100.0
+            limit_dollars /= 100.0
+
+        currency = (extra.get("currency") or "USD").strip() or "USD"
+        return CostInfo(
+            used=used_dollars,
+            limit=limit_dollars,
+            currency=currency,
+            period="monthly",
+        )

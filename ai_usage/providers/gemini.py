@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -120,28 +121,98 @@ class GeminiProvider(BaseProvider):
             return None
 
     def _extract_oauth_client(self) -> tuple[str | None, str | None]:
-        gemini_bin = shutil.which("gemini")
-        if not gemini_bin:
-            return None, None
-
-        gemini_path = Path(gemini_bin).resolve()
-        search_paths = [
-            gemini_path.parent.parent
-            / "libexec/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/code_assist/oauth2.js",
-            gemini_path.parent.parent
-            / "node_modules/@google/gemini-cli-core/dist/src/code_assist/oauth2.js",
-        ]
-
-        for p in search_paths:
-            if p.exists():
-                content = p.read_text()
-                id_match = re.search(r'OAUTH_CLIENT_ID\s*=\s*["\']([^"\']+)', content)
-                secret_match = re.search(
-                    r'OAUTH_CLIENT_SECRET\s*=\s*["\']([^"\']+)', content
-                )
-                if id_match and secret_match:
-                    return id_match.group(1), secret_match.group(1)
+        for js_path in self._candidate_oauth_js_paths():
+            try:
+                content = js_path.read_text()
+            except OSError:
+                continue
+            id_match = re.search(r'OAUTH_CLIENT_ID\s*=\s*["\']([^"\']+)', content)
+            secret_match = re.search(
+                r'OAUTH_CLIENT_SECRET\s*=\s*["\']([^"\']+)', content
+            )
+            if id_match and secret_match:
+                return id_match.group(1), secret_match.group(1)
         return None, None
+
+    @staticmethod
+    def _candidate_oauth_js_paths() -> list[Path]:
+        # Explicit override wins (escape hatch for unusual layouts).
+        env_path = os.environ.get("GEMINI_OAUTH_JS")
+        candidates: list[Path] = []
+        if env_path:
+            candidates.append(Path(env_path).expanduser())
+
+        oauth_subpath = (
+            "node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core"
+            "/dist/src/code_assist/oauth2.js"
+        )
+        nix_share_subpath = (
+            "share/gemini-cli/node_modules/@google/gemini-cli-core"
+            "/dist/src/code_assist/oauth2.js"
+        )
+        oauth_file = "dist/src/code_assist/oauth2.js"
+
+        prefixes: list[Path] = []
+
+        # 1) Anchor on `which gemini`, walking through any shell-wrapper redirection
+        #    (some users install gemini behind a wrapper script that exec's the real binary).
+        gemini_bin = shutil.which("gemini")
+        if gemini_bin:
+            real_bin = GeminiProvider._unwrap_gemini_bin(Path(gemini_bin))
+            prefixes.append(real_bin.parent.parent)
+
+        # 2) Standard install prefixes (Homebrew, MacPorts, system, fnm/nvm node).
+        prefixes.extend(Path(p) for p in [
+            "/usr/local",
+            "/opt/homebrew",
+            "/opt/local",
+            "/usr",
+        ])
+
+        # 3) Active Node prefix (handles fnm/nvm/volta).
+        node_bin = shutil.which("node")
+        if node_bin:
+            prefixes.append(Path(node_bin).resolve().parent.parent)
+
+        # Deduplicate while preserving order.
+        seen: set[Path] = set()
+        uniq_prefixes: list[Path] = []
+        for p in prefixes:
+            if p in seen:
+                continue
+            seen.add(p)
+            uniq_prefixes.append(p)
+
+        for prefix in uniq_prefixes:
+            candidates.extend([
+                prefix / "lib" / oauth_subpath,
+                prefix / "libexec/lib" / oauth_subpath,
+                prefix / nix_share_subpath,
+                prefix / oauth_subpath,
+                prefix.parent / "gemini-cli-core" / oauth_file,
+                prefix / "node_modules/@google/gemini-cli-core" / oauth_file,
+            ])
+
+        return candidates
+
+    @staticmethod
+    def _unwrap_gemini_bin(path: Path) -> Path:
+        # `shutil.which` can return a shell wrapper (e.g. ~/bin/gemini that exec's a REAL_BIN).
+        # Resolve symlinks first; if the result is a small text script that mentions another
+        # `gemini` binary path, follow that one level deeper. Cap to one unwrap to avoid loops.
+        resolved = path.resolve()
+        try:
+            head = resolved.read_bytes()[:4096]
+        except OSError:
+            return resolved
+        if head.startswith(b"#!"):
+            text = head.decode("utf-8", errors="ignore")
+            m = re.search(r'REAL_BIN[^\n]*?["\']?(/[^\s"\']+gemini)', text)
+            if m:
+                target = Path(m.group(1))
+                if target.exists():
+                    return target.resolve()
+        return resolved
 
     async def _find_project(self, token: str) -> str | None:
         try:

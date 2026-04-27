@@ -80,6 +80,20 @@ Example:
 - **macOS**: Claude credentials are read from the system Keychain. All other providers use file-based credentials and work cross-platform.
 - **Linux**: Claude credentials fall back to `~/.claude/.credentials.json`. All other providers work the same as macOS.
 
+## Troubleshooting
+
+**Gemini: `Token expired, refresh failed`**
+
+`ai-usage` refreshes the Gemini token by reading the OAuth client ID/secret from the locally installed `gemini` CLI's `oauth2.js`. The resolver scans common install layouts (Homebrew, npm global, fnm/nvm, Nix) and transparently follows shell wrappers. If your install is in an unusual location, set:
+
+```bash
+export GEMINI_OAUTH_JS=/path/to/@google/gemini-cli-core/dist/src/code_assist/oauth2.js
+```
+
+**Claude: empty `plan` field**
+
+The provider only fills `plan` when the OAuth `rateLimitTier` matches a known tier (`max`, `pro`, `team`, `enterprise`, `free`). Unknown internal tiers (e.g., `default_claude_ai`) are hidden rather than echoed verbatim.
+
 ## Requirements
 
 - Python 3.10+
