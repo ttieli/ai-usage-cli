@@ -9,3 +9,7 @@ build/
 .env
 .DS_Store
 *.so
+
+# Local-only: project tracking/notes, not part of the published package
+docs/
+
