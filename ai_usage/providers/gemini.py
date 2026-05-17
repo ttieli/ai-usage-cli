@@ -242,7 +242,8 @@ class GeminiProvider(BaseProvider):
         }
         result.plan = tier_map.get(tier, tier.title() if tier else "")
 
-        buckets = data.get("userQuotaBuckets", [])
+        # Google returns "buckets"; keep "userQuotaBuckets" as a fallback in case the upstream schema changes.
+        buckets = data.get("buckets") or data.get("userQuotaBuckets") or []
         if not buckets:
             result.windows.append(RateWindow(
                 label="Daily quota",
