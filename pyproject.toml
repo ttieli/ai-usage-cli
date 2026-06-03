@@ -6,7 +6,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "Tie Li", email = "tieli@pm.me" },
+    { name = "ttieli", email = "8285173+ttieli@users.noreply.github.com" },
 ]
 keywords = ["ai", "cli", "usage", "quota", "claude", "codex", "gemini", "copilot"]
 classifiers = [
