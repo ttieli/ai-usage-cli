@@ -53,11 +53,12 @@ Examples:
   ai-usage | grep Claude      auto-switches to plain when piped
 
 Credential sources:
-  Claude   macOS Keychain "Claude Code-credentials" or ~/.claude/.credentials.json
-  Codex    ~/.codex/auth.json (auto-refreshes OAuth token)
-  Gemini   ~/.gemini/oauth_creds.json (auto-refreshes OAuth token)
-  Copilot  apiKey in ~/.codexbar/config.json
-  z.ai     apiKey in ~/.codexbar/config.json or Z_AI_API_KEY env var
+  Antigravity (agy)  System Keyring / ~/.gemini/antigravity-cli
+  Claude             macOS Keychain "Claude Code-credentials" or ~/.claude/.credentials.json
+  Codex              ~/.codex/auth.json (auto-refreshes OAuth token)
+  Gemini             ~/.gemini/oauth_creds.json (auto-refreshes OAuth token)
+  Copilot            apiKey in ~/.codexbar/config.json
+  z.ai               apiKey in ~/.codexbar/config.json or Z_AI_API_KEY env var
 
 Config: ~/.codexbar/config.json (enable/disable providers, API keys, etc.)
 """
@@ -66,7 +67,7 @@ Config: ~/.codexbar/config.json (enable/disable providers, API keys, etc.)
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="ai-usage",
-        description="Check AI coding tool usage quotas (Claude, Codex, Gemini, Copilot, z.ai)",
+        description="Check AI coding tool usage quotas (Antigravity, Claude, Codex, Gemini, Copilot, z.ai)",
         epilog=HELP_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
