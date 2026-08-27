@@ -1,14 +1,14 @@
 [project]
 name = "ai-usage-cli"
 version = "0.1.1"
-description = "CLI tool to check AI coding tool usage quotas (Claude, Codex, Gemini, Copilot, z.ai)"
+description = "CLI tool to check AI coding tool usage quotas (Antigravity, Claude, Codex, Gemini, Copilot, z.ai)"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
     { name = "ttieli", email = "8285173+ttieli@users.noreply.github.com" },
 ]
-keywords = ["ai", "cli", "usage", "quota", "claude", "codex", "gemini", "copilot"]
+keywords = ["ai", "cli", "usage", "quota", "antigravity", "agy", "claude", "codex", "gemini", "copilot"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",

@@ -4,10 +4,14 @@
 [![Python](https://img.shields.io/pypi/pyversions/ai-usage-cli)](https://pypi.org/project/ai-usage-cli/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Check your AI coding tool usage quotas from the terminal. Supports **Claude Code**, **Codex**, **Gemini**, **GitHub Copilot**, and **z.ai**.
+Check your AI coding tool usage quotas from the terminal. Supports **Google Antigravity (AGY)**, **Claude Code**, **Codex**, **Gemini**, **GitHub Copilot**, and **z.ai**.
 
 ```
 $ ai-usage
+
+  Antigravity (AGY)  (oauth)  [Standard]  user@example.com
+    Flash (Gemini 3.7 Flash)   90.0% left  [██████████████████░░]  resets in 4h35m
+    Claude & Pro models       100.0% left  [████████████████████]
 
   Claude  (oauth)  [Max]  user@example.com
     Session (5h)         72.0% left  [█████░░░░░░░░░░░░░░░]  resets in 4h12m
@@ -39,8 +43,7 @@ pip install ai-usage-cli
 
 ```bash
 ai-usage                      # all enabled providers
-ai-usage -p claude             # single provider
-ai-usage -p claude codex       # multiple providers
+ai-usage -p agy claude        # single or multiple providers
 ai-usage -a                    # include disabled providers
 ai-usage --json                # JSON output (for scripting)
 ai-usage --plain               # plain text (no color, no unicode)
@@ -51,6 +54,7 @@ ai-usage | grep Claude         # auto-switches to plain when piped
 
 | Provider | Credential Source |
 |----------|-------------------|
+| Google Antigravity (AGY) | System Keyring / `~/.gemini/antigravity-cli` |
 | Claude Code | macOS Keychain (`Claude Code-credentials`) or `~/.claude/.credentials.json` |
 | Codex | `~/.codex/auth.json` (auto-refreshes OAuth token) |
 | Gemini | `~/.gemini/oauth_creds.json` (auto-refreshes OAuth token) |
