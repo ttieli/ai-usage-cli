@@ -39,6 +39,11 @@ async def fetch_all(
 
 PROVIDER_IDS = [cls.config_id for cls in [c() for c in ALL_PROVIDERS]]
 
+PROGRAM_DESCRIPTION = (
+    "Check AI coding tool usage quotas "
+    "(Claude, Codex, Gemini, Copilot, z.ai, OpenCode Go)"
+)
+
 HELP_EPILOG = f"""\
 Supported providers:
   {', '.join(PROVIDER_IDS)}
@@ -47,6 +52,7 @@ Examples:
   ai-usage                    all enabled providers
   ai-usage -p claude          single provider
   ai-usage -p claude codex    multiple providers
+  ai-usage -p opencode-go     OpenCode Go quota only
   ai-usage -a                 include disabled providers
   ai-usage --json             JSON output (for scripting)
   ai-usage --plain            plain text (no color, no unicode)
@@ -58,6 +64,7 @@ Credential sources:
   Gemini   ~/.gemini/oauth_creds.json (auto-refreshes OAuth token)
   Copilot  apiKey in ~/.codexbar/config.json
   z.ai     apiKey in ~/.codexbar/config.json or Z_AI_API_KEY env var
+  OpenCode Go  ~/.local/share/opencode/auth.json (XDG_DATA_HOME supported)
 
 Config: ~/.codexbar/config.json (enable/disable providers, API keys, etc.)
 """
@@ -66,7 +73,7 @@ Config: ~/.codexbar/config.json (enable/disable providers, API keys, etc.)
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="ai-usage",
-        description="Check AI coding tool usage quotas (Claude, Codex, Gemini, Copilot, z.ai)",
+        description=PROGRAM_DESCRIPTION,
         epilog=HELP_EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )

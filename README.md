@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/ai-usage-cli)](https://pypi.org/project/ai-usage-cli/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Check your AI coding tool usage quotas from the terminal. Supports **Claude Code**, **Codex**, **Gemini**, **GitHub Copilot**, and **z.ai**.
+Check your AI coding tool usage quotas from the terminal. Supports **Claude Code**, **Codex**, **Gemini**, **GitHub Copilot**, **z.ai**, and **OpenCode Go**.
 
 ```
 $ ai-usage
@@ -19,6 +19,11 @@ $ ai-usage
   Gemini  (oauth)  [Free]
     Per-minute          100.0% left  [░░░░░░░░░░░░░░░░░░░░]
     Daily                88.4% left  [██░░░░░░░░░░░░░░░░░░]  resets in 16h
+
+  OpenCode Go  (api)  [Go]
+    Rolling              75.0% left  [█████░░░░░░░░░░░░░░░]  resets in 4h12m
+    Weekly               60.0% left  [████████░░░░░░░░░░░░]
+    Monthly              90.0% left  [██░░░░░░░░░░░░░░░░░░]
 ```
 
 ## Installation
@@ -41,6 +46,7 @@ pip install ai-usage-cli
 ai-usage                      # all enabled providers
 ai-usage -p claude             # single provider
 ai-usage -p claude codex       # multiple providers
+ai-usage -p opencode-go        # OpenCode Go quota only
 ai-usage -a                    # include disabled providers
 ai-usage --json                # JSON output (for scripting)
 ai-usage --plain               # plain text (no color, no unicode)
@@ -56,10 +62,13 @@ ai-usage | grep Claude         # auto-switches to plain when piped
 | Gemini | `~/.gemini/oauth_creds.json` (auto-refreshes OAuth token) |
 | GitHub Copilot | `apiKey` in `~/.codexbar/config.json` |
 | z.ai | `apiKey` in `~/.codexbar/config.json` or `Z_AI_API_KEY` env var |
+| OpenCode Go | `opencode-go` entry in `$XDG_DATA_HOME/opencode/auth.json` (default: `~/.local/share/opencode/auth.json`) |
 
 ## Configuration
 
 Provider settings are stored in `~/.codexbar/config.json`. Each provider can be enabled/disabled and configured with API keys where needed.
+
+OpenCode Go uses the credential already managed by OpenCode. Its public CLI ID is `opencode-go`; when CodexBar has an `opencodego` entry, `ai-usage` honors that entry's `enabled` flag. Without an explicit CodexBar entry, an existing OpenCode Go credential enables the provider automatically. OpenCode Go quota is independent of Codex OAuth quota and must be checked separately.
 
 Example:
 
@@ -103,7 +112,7 @@ The provider only fills `plan` when the OAuth `rateLimitTier` matches a known ti
 
 ## 中文说明
 
-终端查询 AI 编程工具配额用量。支持 Claude Code、Codex、Gemini、GitHub Copilot、z.ai。
+终端查询 AI 编程工具配额用量。支持 Claude Code、Codex、Gemini、GitHub Copilot、z.ai、OpenCode Go。
 
 ### 安装
 
@@ -117,6 +126,7 @@ pipx install ai-usage-cli
 ai-usage                      # 查看所有已启用的 Provider
 ai-usage -p claude             # 只看 Claude
 ai-usage -p claude codex       # 看 Claude 和 Codex
+ai-usage -p opencode-go        # 只看 OpenCode Go
 ai-usage -a                    # 包含未启用的 Provider
 ai-usage --json                # JSON 输出（适合脚本处理）
 ai-usage --plain               # 纯文本输出（无颜色、无 Unicode）
